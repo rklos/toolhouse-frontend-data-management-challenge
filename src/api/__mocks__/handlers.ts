@@ -13,6 +13,6 @@ export const handlers = [
     const offset = (Number(page) - 1) * Number(pageSize);
     const items = itemsList.slice(offset, offset + Number(pageSize));
 
-    return HttpResponse.json(items);
+    return HttpResponse.json({ items, total: itemsList.length });
   }),
 ];
