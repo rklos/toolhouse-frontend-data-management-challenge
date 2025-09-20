@@ -11,6 +11,6 @@ const api = ky.create({
 export default {
   api,
   items: {
-    getList: async (page?: number, limit?: number) => itemsGetList(api, page, limit),
+    getList: async (page?: number, pageSize?: number) => itemsGetList(api, page, pageSize),
   }
 };
