@@ -13,7 +13,7 @@ export interface ItemModel {
 
 interface Props extends ItemModel {
   onSave: (item: ItemModel) => void;
-  onDelete: (id: string) => void;
+  onDelete: () => void;
 }
 
 export function Item({ onSave, onDelete, ...item }: Props) {
@@ -35,7 +35,7 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   };
 
   const handleDelete = () => {
-    onDelete(itemData.id);
+    onDelete();
   };
 
   const changeHandlerFactory = (field: keyof ItemModel) => (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,5 +1,8 @@
 import ky from 'ky';
-import { getList as itemsGetList } from './items';
+import {
+  getList as itemsGetList,
+  deleteItem as itemsDeleteItem,
+} from './items';
 
 const api = ky.create({
   prefixUrl: 'http://localhost:5173/api',
@@ -12,5 +15,6 @@ export default {
   api,
   items: {
     getList: async (page?: number, pageSize?: number) => itemsGetList(api, page, pageSize),
+    deleteItem: async (id: string) => itemsDeleteItem(api, id),
   }
 };

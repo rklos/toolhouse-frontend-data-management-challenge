@@ -13,9 +13,20 @@ function App() {
       })
   }, [])
 
+  const handleDelete = (id: string) => {
+    api.items.deleteItem(id)
+      .then(() => {
+        setItems(items.filter((item) => item.id !== id))
+      })
+  }
+
+  const handleSave = () => {
+    // TODO: implement
+  }
+
   return (
     <main>
-      <List items={items} />
+      <List items={items} onDelete={handleDelete} onSave={handleSave} />
     </main>
   )
 }
