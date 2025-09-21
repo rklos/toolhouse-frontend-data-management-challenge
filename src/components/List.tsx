@@ -14,6 +14,13 @@ export function List({ items, onDelete, onSave }: Props) {
 
   return (
     <div className="grid max-w-7xl">
+      <section className="grid grid-cols-subgrid [&_div]:px-2 col-span-5">
+        <div>Name</div>
+        <div>Description</div>
+        <div>Created At</div>
+        <div>Status</div>
+        <div></div>
+      </section>
       {items.map((itemData) => (
         <Item 
           key={itemData.id}
