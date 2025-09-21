@@ -208,7 +208,7 @@ describe('List Component - Sorting Logic', () => {
       id: '4',
       name: 'Date',
       description: 'A sweet fruit',
-      status: 'active',
+      status: 'active' as 'active' | 'archived' | 'draft',
       createdAt: '2023-01-04T00:00:00.000Z',
     }];
 
