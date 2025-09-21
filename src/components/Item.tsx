@@ -23,33 +23,38 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   const [itemData, setItemData] = useState<ItemModel>(item);
   const dataBeforeSave = useRef<ItemModel>(item);
 
-  const handleSave = async () => {
+  // Save changes if there are any, otherwise do nothing
+  const handleSave = useCallback(async () => {
     const changes = getObjectChanges(itemData, dataBeforeSave.current);
 
-    if (Object.keys(changes).length > 0) {
-      const success = await onSave({ id: itemData.id, ...changes });
-      if (success) {
-        dataBeforeSave.current = { ...itemData };
-      } else {
-        // Revert changes on failure
-        setItemData(dataBeforeSave.current);
-      }
-    }
-  };
+    if (Object.keys(changes).length === 0) return;
 
+    const success = await onSave({ id: itemData.id, ...changes });
+    if (success) {
+      dataBeforeSave.current = { ...itemData };
+    } else {
+      // Revert changes on failure
+      setItemData(dataBeforeSave.current);
+    }
+  }, [itemData, onSave]);
+
+  // Delete handler
   const handleDelete = useCallback(() => {
     onDelete(itemData.id);
   }, [onDelete, itemData.id]);
 
-  const changeHandlerFactory = (field: 'name' | 'description') => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setItemData({ ...itemData, [field]: e.target.value ?? '' });
+  // Factory for input change handlers
+  const handleChange = (field: 'name' | 'description') => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setItemData(prev => ({ ...prev, [field]: e.target.value ?? '' }));
   };
 
-  const { ref: editRef, focused, blur } = useClickOutside<HTMLDivElement>(() => {
-    handleSave();
-  });
+  // Handle click outside to trigger save
+  const { ref: editRef, focused, blur } = useClickOutside<HTMLDivElement>(handleSave);
 
-  const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  // Save on Enter key and blur input
+  const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSave();
       e.currentTarget.blur();
@@ -61,13 +66,13 @@ export function Item({ onSave, onDelete, ...item }: Props) {
     <div className={cn("grid [&_*]:px-2 py-1 grid-cols-subgrid col-span-5 border-t border-gray-800 gap-2", { '[&_input]:bg-gray-800': focused })} ref={editRef}>
       <input
           value={itemData.name}
-          onChange={changeHandlerFactory('name')}
-          onKeyUp={onEnter}
+          onChange={handleChange('name')}
+          onKeyUp={handleEnterKey}
         />
       <input
           value={itemData.description}
-          onChange={changeHandlerFactory('description')}
-          onKeyUp={onEnter}
+          onChange={handleChange('description')}
+          onKeyUp={handleEnterKey}
         />
       <div className="text-nowrap">{itemData.createdAt}</div>
       <div>{itemData.status}</div>
