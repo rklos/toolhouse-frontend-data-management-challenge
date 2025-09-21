@@ -52,11 +52,12 @@ export const handlers = [
     return HttpResponse.json({ success: true });
   }),
   http.post('/api/items', async ({ request }) => {
-    localItemsList.push({
+    const item = {
       ...(await request.clone().json()),
       id: uuidv4(),
       createdAt: new Date().toISOString(),
-    });
-    return HttpResponse.json({ success: true });
+    };
+    localItemsList.push(item);
+    return HttpResponse.json({ success: true, item });
   }),
 ];
