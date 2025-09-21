@@ -23,7 +23,7 @@ export const handlers = [
       .sort(sortBy(sort))
       .slice(offset, offset + Number(pageSize));
 
-    return HttpResponse.json({ items, total: localItemsList.length });
+    return HttpResponse.json({ items, total: items.length });
   }),
   http.delete('/api/items/:id', ({ params }) => {
     if (Math.random() < 0.1) {
