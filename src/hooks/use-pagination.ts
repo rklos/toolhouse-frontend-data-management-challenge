@@ -1,70 +1,45 @@
-import { useState, useTransition, useReducer } from 'react';
+import { useState, useTransition } from 'react';
+import type { ApiParams } from '../api/items';
 
 const PAGE_SIZE = 20;
 
-interface Props<T extends object> {
-  apiParams?: {
-    sort?: string;
-    query?: string;
-    status?: string;
-  };
-  apiGetter: (params: {
-    page?: number;
-    pageSize?: number;
-    sort?: string;
-    query?: string;
-    status?: string;
-  }) => Promise<{ items: T[], total: number }>;
-  onItemsChange: (items: T[]) => void;
-}
+type FilterParams = Omit<ApiParams, 'page' | 'pageSize'>;
+type ApiGetter<T> = (params: ApiParams) => Promise<{ items: T[]; total: number }>;
 
-export function usePagination<T extends object>({ apiGetter, onItemsChange, apiParams }: Props<T>) {
+export function usePagination<T extends object>(
+  apiGetter: ApiGetter<T>,
+  initialParams: ApiParams = {}
+) {
   const [items, setItems] = useState<T[]>([]);
+  const [page, setPage] = useState(1);
   const [maxPages, setMaxPages] = useState(1);
   const [isLoading, startTransition] = useTransition();
-  const [page, setPage] = useReducer((_, newPage: number) => {
-    let newState = newPage;
+  const [params, setParams] = useState<FilterParams>(initialParams);
 
-    if (newState < 1) {
-      newState = 1;
-    } else if (newState > maxPages) {
-      newState = maxPages;
-    }
-
-    return newState;
-  }, 1);
-
-  const fetchItems = (p?: number, params?: Props<T>['apiParams']) => {
+  const fetchItems = (opts?: { page?: number; params?: FilterParams }) => {
+    const fetchPage = opts?.page ?? page;
+    const fetchParams = opts?.params || params;
     startTransition(async () => {
       const res = await apiGetter({
-        page: p ?? page,
+        page: fetchPage,
         pageSize: PAGE_SIZE,
-        sort: params?.sort ?? apiParams?.sort,
-        query: params?.query ?? apiParams?.query,
-        status: params?.status ?? apiParams?.status,
+        ...fetchParams,
       });
-
-      // HACK: https://react.dev/reference/react/useTransition#react-doesnt-treat-my-state-update-after-await-as-a-transition
-      startTransition(() => {
-        const newItems = res.items ?? [];
-        setItems(newItems);
-        setMaxPages(Math.ceil(res.total / PAGE_SIZE));
-        onItemsChange(newItems);
-      });
+      setItems(res.items ?? []);
+      setMaxPages(Math.max(1, Math.ceil(res.total / PAGE_SIZE)));
     });
   };
 
-  const onPageChange = (newPage: number) => {
-    setPage(newPage);
-    fetchItems(newPage);
+  const goToPage = (newPage: number) => {
+    const safePage = Math.max(1, Math.min(newPage, maxPages));
+    setPage(safePage);
+    fetchItems({ page: safePage });
   };
 
-  const nextPage = () => {
-    onPageChange(page + 1);
-  };
-
-  const previousPage = () => {
-    onPageChange(page - 1);
+  const updateParams = (newParams: FilterParams) => {
+    setParams(newParams);
+    setPage(1);
+    fetchItems({ page: 1, params: newParams });
   };
 
   return {
@@ -72,9 +47,9 @@ export function usePagination<T extends object>({ apiGetter, onItemsChange, apiP
     isLoading,
     page,
     maxPages,
-    nextPage,
-    previousPage,
-    setPage: onPageChange,
+    goToPage,
     fetchItems,
+    setParams: updateParams,
+    params,
   };
 }

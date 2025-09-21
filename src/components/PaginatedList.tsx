@@ -5,37 +5,30 @@ import api from '../api';
 import { Button } from './Button';
 import { Filters } from './Filters';
 import { Toast } from './Toast';
-import type { Item, ItemUpdatePayload } from '../api/items';
+import type { Item, ItemUpdatePayload, ApiParams } from '../api/items';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<Item[]>([]);
-  const [apiParams, setApiParams] = useState<{
-    page?: number;
-    pageSize?: number;
-    sort?: string;
-    query?: string;
-    status?: string;
-  }>({});
+  const [apiParams, setApiParams] = useState<ApiParams>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const {
+    items,
     maxPages,
     page,
     isLoading,
-    setPage,
+    goToPage,
     fetchItems,
-    nextPage,
-    previousPage,
-  } = usePagination({
-    apiGetter: api.items.getList,
-    onItemsChange: setLocalItems,
-    apiParams,
-  });
+  } = usePagination(api.items.getList, apiParams);
 
   useEffect(() => {
     fetchItems();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setLocalItems(items);
+  }, [items])
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -66,7 +59,7 @@ export function PaginatedList() {
     (newParams: Partial<typeof apiParams>) => {
       const updatedParams = { ...apiParams, ...newParams };
       setApiParams(updatedParams);
-      fetchItems(page, updatedParams);
+      fetchItems({ page, params: updatedParams });
     },
     [apiParams, fetchItems, page]
   );
@@ -98,11 +91,11 @@ export function PaginatedList() {
         <List items={localItems} onDelete={handleDelete} onSave={handleSave} onSort={handleSort} />
       </div>
       <section className="flex justify-center p-4 gap-2">
-        <Button onClick={previousPage} disabled={page === 1}>Previous</Button>
+        <Button onClick={() => goToPage(page - 1)} disabled={page === 1}>Previous</Button>
         {pages.map((pageNumber) => (
-          <Button key={pageNumber} onClick={() => setPage(pageNumber)} active={page === pageNumber}>{pageNumber}</Button>
+          <Button key={pageNumber} onClick={() => goToPage(pageNumber)} active={page === pageNumber}>{pageNumber}</Button>
         ))}
-        <Button onClick={nextPage} disabled={page === maxPages}>Next</Button>
+        <Button onClick={() => goToPage(page + 1)} disabled={page === maxPages}>Next</Button>
       </section>
       {toastMessage && (
         <Toast
