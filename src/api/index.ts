@@ -4,7 +4,6 @@ import {
   deleteItem as itemsDeleteItem,
   saveItem as itemsSaveItem,
 } from './items';
-import type { ItemUpdatePayload } from './items';
 
 const api = ky.create({
   prefixUrl: 'http://localhost:5173/api',
@@ -16,14 +15,8 @@ const api = ky.create({
 export default {
   api,
   items: {
-    getList: async (params: {
-      page?: number;
-      pageSize?: number;
-      sort?: string;
-      query?: string;
-      status?: string;
-    }) => itemsGetList(api, params),
+    getList: async (params: Parameters<typeof itemsGetList>[1]) => itemsGetList(api, params),
     deleteItem: async (id: string) => itemsDeleteItem(api, id),
-    saveItem: async (item: ItemUpdatePayload) => itemsSaveItem(api, item),
+    saveItem: async (item: Parameters<typeof itemsSaveItem>[1]) => itemsSaveItem(api, item),
   }
 };
