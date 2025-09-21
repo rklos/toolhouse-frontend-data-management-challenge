@@ -6,7 +6,15 @@ interface Props {
 }
 
 export function List({ items }: Props) {
-  return items.map((itemData) => (
-    <Item {...itemData} onSave={() => {}} onDelete={() => {}} />
-  ));
+  return (
+    <div className="grid max-w-7xl">
+      {items.map((itemData) => (
+        <Item 
+          key={itemData.id}
+          onSave={() => {}} onDelete={() => {}}
+          {...itemData}
+        />
+      ))}
+    </div>
+  );
 }

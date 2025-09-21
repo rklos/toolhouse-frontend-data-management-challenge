@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { Button } from './Button';
+import { useClickOutside } from '../hooks/use-click-outside';
 
+// TODO: move the interface to /api/items.ts
 export interface ItemModel {
   id: string; // uuid
   name: string;
@@ -14,49 +17,55 @@ interface Props extends ItemModel {
 }
 
 export function Item({ onSave, onDelete, ...item }: Props) {
-  const { id, name, description, createdAt, status } = item;
-
+  const [itemData, setItemData] = useState<ItemModel>(item);
   const [isEditing, setIsEditing] = useState(false);
+  const [dataChanged, setDataChanged] = useState<boolean>(false);
 
   const handleEdit = () => {
+    setDataChanged(false)
     setIsEditing(true);
   };
 
   const handleSave = () => {
     setIsEditing(false);
-    onSave({ id, name, description, createdAt, status });
-  };
 
-  const handleCancel = () => {
-    setIsEditing(false);
+    if (dataChanged) {
+      onSave(itemData);
+    }
   };
 
   const handleDelete = () => {
-    onDelete(id);
+    onDelete(itemData.id);
   };
 
-  const changeHandlerFactory = (field: keyof ItemModel) => (e: React.FocusEvent<HTMLDivElement>) => {
-    onSave({ ...item, [field]: e.target.textContent ?? '' });
+  const changeHandlerFactory = (field: keyof ItemModel) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setItemData({ ...item, [field]: e.target.value ?? '' });
+    setDataChanged(true)
   };
+
+  const editRef = useClickOutside<HTMLDivElement>(() => {
+    handleSave()
+  });
 
   return (
-    <div className="flex flex-row gap-2">
-      <div contentEditable={isEditing} onInput={changeHandlerFactory('name')}>{name}</div>
-      <div contentEditable={isEditing} onInput={changeHandlerFactory('description')}>{description}</div>
-      <div>{createdAt}</div>
-      <div>{status}</div>
-      { !isEditing && (
-        <>
-          <button onClick={handleEdit}>Edit</button>
-          <button onClick={handleDelete}>Delete</button>
-        </>
-      ) }
-      { isEditing && (
-        <>
-          <button onClick={handleSave}>Save</button>
-          <button onClick={handleCancel}>Cancel</button>
-        </>
-      ) }
+    <div className="grid md:grid-cols-16 grid-cols-8 md:gap-4 gap-1 items-center [&_div]:px-2 auto-cols-max">
+      <div className="md:col-span-10 col-span-4 flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:focus:bg-gray-800 [&_input]:px-2" ref={editRef}>
+        <input
+            value={itemData.name}
+            onFocus={handleEdit}
+            onChange={changeHandlerFactory('name')}
+          />
+        <input
+            value={itemData.description}
+            onFocus={handleEdit}
+            onChange={changeHandlerFactory('description')}
+          />
+      </div>
+      <div className="md:col-span-4 col-span-2">{itemData.createdAt}</div>
+      <div>{itemData.status}</div>
+      <div className="justify-self-end">
+        <Button onClick={handleDelete} disabled={isEditing}>X</Button>
+      </div>
     </div>
   );
 }
