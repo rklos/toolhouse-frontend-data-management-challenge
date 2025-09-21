@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from './Button';
 import { useClickOutside } from '../hooks/use-click-outside';
 import { getObjectChanges } from '../utils/get-object-changes';
@@ -21,16 +21,9 @@ interface Props extends ItemModel {
 
 export function Item({ onSave, onDelete, ...item }: Props) {
   const [itemData, setItemData] = useState<ItemModel>(item);
-  const [isEditing, setIsEditing] = useState(false);
   const dataBeforeSave = useRef<ItemModel>(item);
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-
   const handleSave = () => {
-    setIsEditing(false);
-
     const changes = getObjectChanges(itemData, dataBeforeSave.current);
 
     if (Object.keys(changes).length > 0) {
@@ -39,36 +32,32 @@ export function Item({ onSave, onDelete, ...item }: Props) {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     onDelete();
-  };
+  }, [onDelete]);
 
   const changeHandlerFactory = (field: 'name' | 'description') => (e: React.ChangeEvent<HTMLInputElement>) => {
     setItemData({ ...itemData, [field]: e.target.value ?? '' });
   };
 
-  const { ref: editRef, focused } = useClickOutside<HTMLDivElement>(() => {
-    handleSave()
-  });
+  const { ref: editRef, focused } = useClickOutside<HTMLDivElement>(handleSave);
 
   return (
     <div className="grid [&_div]:px-2 py-1 grid-cols-subgrid col-span-4 border-t border-gray-800">
       <div className={cn('flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:px-2', { '[&_input]:bg-gray-800': focused })} ref={editRef}>
         <input
             value={itemData.name}
-            onFocus={handleEdit}
             onChange={changeHandlerFactory('name')}
           />
         <input
             value={itemData.description}
-            onFocus={handleEdit}
             onChange={changeHandlerFactory('description')}
           />
       </div>
       <div className="text-nowrap">{itemData.createdAt}</div>
       <div>{itemData.status}</div>
       <div className="justify-self-end">
-        <Button onClick={handleDelete} disabled={isEditing}>X</Button>
+        <Button onClick={handleDelete} disabled={focused}>X</Button>
       </div>
     </div>
   );
