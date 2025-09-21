@@ -48,7 +48,7 @@ export async function saveItem(api: typeof ky, item: ItemUpdatePayload): Promise
   if (!response.ok) throw new Error();
 }
 
-export async function addItem(api: typeof ky, item: Omit<Item, 'id' | 'createdAt'>): Promise<void> {
+export async function addItem(api: typeof ky, item: Omit<Item, 'id' | 'createdAt'>): Promise<{ item: Item }> {
   const response = await api.post('items', {
     json: item,
   });

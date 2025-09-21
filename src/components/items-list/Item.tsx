@@ -9,9 +9,10 @@ import type { Item as ItemModel, ItemUpdatePayload } from '../../api/items';
 interface Props extends ItemModel {
   onSave: (item: ItemUpdatePayload) => Promise<boolean>;
   onDelete: (id: string) => void;
+  isNew?: boolean;
 }
 
-export function Item({ onSave, onDelete, ...item }: Props) {
+export function Item({ onSave, onDelete, isNew = false, ...item }: Props) {
   const [itemData, setItemData] = useState<ItemModel>(item);
   const dataBeforeSave = useRef<ItemModel>(item);
 
@@ -55,7 +56,13 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   };
 
   return (
-    <div className={cn("grid [&_*]:px-2 py-1 grid-cols-subgrid col-span-5 border-t border-gray-800 gap-2", { '[&_input]:bg-gray-800': focused })} ref={editRef}>
+    <div className={cn(
+      "grid [&_*]:px-2 py-1 grid-cols-subgrid col-span-5 border-t border-gray-800 gap-2 transition-all duration-500 ease-in-out",
+      { 
+        '[&_input]:bg-gray-800': focused,
+        'animate-pulse bg-green-100 border-green-300 text-gray-900': isNew
+      }
+    )} ref={editRef}>
       <input
           value={itemData.name}
           onChange={handleChange('name')}

@@ -9,9 +9,10 @@ interface Props {
   onSave: (item: ItemUpdatePayload) => Promise<boolean>;
   onDelete: (id: string) => void;
   onSort: (sort: SortBy) => void;
+  newItemId?: string;
 }
 
-export function List({ items, onDelete, onSave, onSort }: Props) {
+export function List({ items, onDelete, onSave, onSort, newItemId = '' }: Props) {
   const [sortBy, setSortBy] = useState<SortBy>('name:asc');
 
   const handleSave = useCallback((item: ItemUpdatePayload) => onSave(item), [onSave]);
@@ -45,10 +46,11 @@ export function List({ items, onDelete, onSave, onSort }: Props) {
         key={itemData.id}
         onSave={handleSave}
         onDelete={handleDelete}
+        isNew={newItemId === itemData.id}
         {...itemData}
       />
     ));
-  }, [items, handleSave, handleDelete]);
+  }, [items, handleSave, handleDelete, newItemId]);
 
   return (
     <div className="grid max-w-7xl">

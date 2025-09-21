@@ -6,11 +6,14 @@ import { Button } from '../common/Button';
 import { Filters } from './Filters';
 import { Toast } from '../common/Toast';
 import { ConfirmationModal } from '../common/ConfirmationModal';
+import { AddItemModal } from './AddItemModal';
 import type { Item, ItemUpdatePayload } from '../../api/items';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<Item[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [newItemId, setNewItemId] = useState<string>('');
+  const [addModal, setAddModal] = useState<boolean>(false);
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
     itemId: string | null;
@@ -75,6 +78,35 @@ export function PaginatedList() {
     setDeleteModal({ isOpen: false, itemId: null, itemName: '' });
   }, []);
 
+  const handleAddItem = useCallback(async (itemData: { name: string; description: string; status: 'active' | 'archived' | 'draft' }) => {
+    try {
+      const response = await api.items.addItem(itemData);
+      const newItem = response.item;
+
+      // Add the new item at the beginning of the list
+      setLocalItems(prevItems => [newItem, ...prevItems]);
+      
+      // Mark it as new for animation
+      setNewItemId(newItem.id);
+      
+      // Remove the new item animation after 3 seconds
+      setTimeout(() => {
+        setNewItemId('');
+      }, 3000);
+    } catch (error) {
+      setToastMessage('Failed to add item. Please try again.');
+      throw error; // Re-throw to let the modal handle the error state
+    }
+  }, []);
+
+  const handleAddModalOpen = useCallback(() => {
+    setAddModal(true);
+  }, []);
+
+  const handleAddModalClose = useCallback(() => {
+    setAddModal(false);
+  }, []);
+
   const handleSave = useCallback(
     async (item: ItemUpdatePayload) => {
       try {
@@ -120,8 +152,13 @@ export function PaginatedList() {
     <>
       <div className="relative">
         { isLoading && <div className="absolute inset-0 flex justify-center items-center backdrop-blur-xs" /> }
-        <Filters onSearch={handleSearch} onStatusChange={handleStatusChange} />
-        <List items={localItems} onDelete={handleDeleteRequest} onSave={handleSave} onSort={handleSort} />
+        <div className="flex justify-between items-center mb-4">
+          <Filters onSearch={handleSearch} onStatusChange={handleStatusChange} />
+          <Button onClick={handleAddModalOpen} className="bg-green-600 hover:bg-green-700 text-white border-green-600">
+            + Add Item
+          </Button>
+        </div>
+        <List items={localItems} onDelete={handleDeleteRequest} onSave={handleSave} onSort={handleSort} newItemId={newItemId} />
       </div>
       <section className="flex justify-center p-4 gap-2">
         <Button onClick={() => goToPage(page - 1)} disabled={page === 1}>Previous</Button>
@@ -144,6 +181,11 @@ export function PaginatedList() {
         cancelText="Cancel"
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
+      />
+      <AddItemModal
+        isOpen={addModal}
+        onClose={handleAddModalClose}
+        onAdd={handleAddItem}
       />
     </>
   );
