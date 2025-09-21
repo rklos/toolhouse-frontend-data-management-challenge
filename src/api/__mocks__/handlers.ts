@@ -20,8 +20,8 @@ export const handlers = [
     const items = localItemsList
       .filter((item) => !query ||item.name.includes(query) || item.description.includes(query))
       .filter((item) => !status ||item.status === status)
-      .slice(offset, offset + Number(pageSize))
-      .sort(sortBy(sort));
+      .sort(sortBy(sort))
+      .slice(offset, offset + Number(pageSize));
 
     return HttpResponse.json({ items, total: localItemsList.length });
   }),
