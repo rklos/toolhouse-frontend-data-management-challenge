@@ -1,18 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 
 type Handler = (event: MouseEvent | TouchEvent) => void;
 
 export function useClickOutside<T extends HTMLElement>(
   handler: Handler
-): RefObject<T | null> {
+): { ref: RefObject<T | null>, focused: boolean } {
   const ref = useRef<T | null>(null);
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     function listener(event: MouseEvent | TouchEvent) {
-      if (!ref.current || ref.current.contains(event.target as Node)) {
+      if (!ref.current) return;
+      if (ref.current.contains(event.target as Node)) {
+        setFocused(true);
         return;
       }
+
+      setFocused(false)
       handler(event);
     }
 
@@ -25,5 +30,5 @@ export function useClickOutside<T extends HTMLElement>(
     };
   }, [handler]);
 
-  return ref;
+  return { ref, focused };
 }

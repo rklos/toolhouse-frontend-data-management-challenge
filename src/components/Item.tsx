@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Button } from './Button';
 import { useClickOutside } from '../hooks/use-click-outside';
 import { getObjectChanges } from '../utils/get-object-changes';
+import cn from 'classnames';
 
 // TODO: move the interface to /api/items.ts
 export interface ItemModel {
@@ -46,13 +47,13 @@ export function Item({ onSave, onDelete, ...item }: Props) {
     setItemData({ ...itemData, [field]: e.target.value ?? '' });
   };
 
-  const editRef = useClickOutside<HTMLDivElement>(() => {
+  const { ref: editRef, focused } = useClickOutside<HTMLDivElement>(() => {
     handleSave()
   });
 
   return (
     <div className="grid md:grid-cols-16 grid-cols-8 md:gap-4 gap-1 items-center [&_div]:px-2 auto-cols-max">
-      <div className="md:col-span-10 col-span-4 flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:focus:bg-gray-800 [&_input]:px-2" ref={editRef}>
+      <div className={cn('md:col-span-10 col-span-4 flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:px-2', { '[&_input]:bg-gray-800': focused })} ref={editRef}>
         <input
             value={itemData.name}
             onFocus={handleEdit}
