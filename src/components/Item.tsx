@@ -43,17 +43,15 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   const { ref: editRef, focused } = useClickOutside<HTMLDivElement>(handleSave);
 
   return (
-    <div className="grid [&_div]:px-2 py-1 grid-cols-subgrid col-span-4 border-t border-gray-800">
-      <div className={cn('flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:px-2', { '[&_input]:bg-gray-800': focused })} ref={editRef}>
-        <input
-            value={itemData.name}
-            onChange={changeHandlerFactory('name')}
-          />
-        <input
-            value={itemData.description}
-            onChange={changeHandlerFactory('description')}
-          />
-      </div>
+    <div className={cn("grid [&_*]:px-2 py-1 grid-cols-subgrid col-span-5 border-t border-gray-800 gap-2", { '[&_input]:bg-gray-800': focused })} ref={editRef}>
+      <input
+          value={itemData.name}
+          onChange={changeHandlerFactory('name')}
+        />
+      <input
+          value={itemData.description}
+          onChange={changeHandlerFactory('description')}
+        />
       <div className="text-nowrap">{itemData.createdAt}</div>
       <div>{itemData.status}</div>
       <div className="justify-self-end">
