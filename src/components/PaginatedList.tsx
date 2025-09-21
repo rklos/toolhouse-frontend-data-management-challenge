@@ -17,7 +17,16 @@ export function PaginatedList() {
     status?: string;
   }>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const { maxPages, page, isLoading, setPage, fetchItems, nextPage, previousPage } = usePagination({
+
+  const {
+    maxPages,
+    page,
+    isLoading,
+    setPage,
+    fetchItems,
+    nextPage,
+    previousPage,
+  } = usePagination({
     apiGetter: api.items.getList,
     onItemsChange: setLocalItems,
     apiParams,
@@ -25,50 +34,61 @@ export function PaginatedList() {
 
   useEffect(() => {
     fetchItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDelete = useCallback(async (id: string) => {
-    try {
-      await api.items.deleteItem(id);
-      setLocalItems(localItems.filter((item) => item.id !== id));
-    } catch {
-      setToastMessage('Failed to delete item. Please try again.');
-    }
-  }, [localItems]);
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await api.items.deleteItem(id);
+        setLocalItems((items) => items.filter((item) => item.id !== id));
+      } catch {
+        setToastMessage('Failed to delete item. Please try again.');
+      }
+    },
+    []
+  );
 
-  const handleSave = useCallback(async (item: ItemUpdatePayload) => {
-    try {
-      await api.items.saveItem(item);
-      return true;
-    } catch {
-      setToastMessage('Failed to save item. Please try again.');
-      return false;
-    }
-  }, []);
+  const handleSave = useCallback(
+    async (item: ItemUpdatePayload) => {
+      try {
+        await api.items.saveItem(item);
+        return true;
+      } catch {
+        setToastMessage('Failed to save item. Please try again.');
+        return false;
+      }
+    },
+    []
+  );
 
-  const handleSort = useCallback((sort: string) => {
-    const newApiParams = { ...apiParams, sort };
-    setApiParams(newApiParams);
-    fetchItems(page, newApiParams);
-  }, [fetchItems, page, apiParams]);
+  const updateApiParamsAndFetch = useCallback(
+    (newParams: Partial<typeof apiParams>) => {
+      const updatedParams = { ...apiParams, ...newParams };
+      setApiParams(updatedParams);
+      fetchItems(page, updatedParams);
+    },
+    [apiParams, fetchItems, page]
+  );
 
-  const handleSearch = useCallback((search: string) => {
-    const newApiParams = { ...apiParams, query: search };
-    setApiParams(newApiParams);
-    fetchItems(page, newApiParams);
-  }, [fetchItems, page, apiParams]);
+  const handleSort = useCallback(
+    (sort: string) => updateApiParamsAndFetch({ sort }),
+    [updateApiParamsAndFetch]
+  );
 
-  const handleStatusChange = useCallback((status: string) => {
-    const newApiParams = { ...apiParams, status };
-    setApiParams(newApiParams);
-    fetchItems(page, newApiParams);
-  }, [fetchItems, page, apiParams]);
+  const handleSearch = useCallback(
+    (query: string) => updateApiParamsAndFetch({ query }),
+    [updateApiParamsAndFetch]
+  );
 
-  const pages = Array.from({ length: maxPages }).map((_, index) => index + 1);
+  const handleStatusChange = useCallback(
+    (status: string) => updateApiParamsAndFetch({ status }),
+    [updateApiParamsAndFetch]
+  );
 
-  const clearToast = () => {
-    setToastMessage(null);
-  };
+  const pages = Array.from({ length: maxPages }, (_, i) => i + 1);
+
+  const clearToast = () => setToastMessage(null);
 
   return (
     <>
