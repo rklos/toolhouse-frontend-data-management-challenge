@@ -4,7 +4,7 @@ import {
   deleteItem as itemsDeleteItem,
   saveItem as itemsSaveItem,
 } from './items';
-import type { ItemModel } from '../components/Item';
+import type { ItemUpdatePayload } from './items';
 
 const api = ky.create({
   prefixUrl: 'http://localhost:5173/api',
@@ -24,6 +24,6 @@ export default {
       status?: string;
     }) => itemsGetList(api, params),
     deleteItem: async (id: string) => itemsDeleteItem(api, id),
-    saveItem: async (item: Partial<ItemModel> & { id: string }) => itemsSaveItem(api, item),
+    saveItem: async (item: ItemUpdatePayload) => itemsSaveItem(api, item),
   }
 };
