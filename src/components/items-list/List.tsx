@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Item } from './Item';
-import type { Item as ItemModel, ItemUpdatePayload } from '../api/items';
+import type { Item as ItemModel, ItemUpdatePayload } from '../../api/items';
 
 type SortBy = `${keyof ItemModel}:${'asc' | 'desc'}`;
 

@@ -1,12 +1,12 @@
 import { useEffect, useCallback, useState } from 'react';
 import { List } from './List';
-import { usePagination } from '../hooks/use-pagination';
-import api from '../api';
-import { Button } from './Button';
+import { usePagination } from '../../hooks/use-pagination';
+import api from '../../api';
+import { Button } from '../common/Button';
 import { Filters } from './Filters';
-import { Toast } from './Toast';
-import { ConfirmationModal } from './ConfirmationModal';
-import type { Item, ItemUpdatePayload } from '../api/items';
+import { Toast } from '../common/Toast';
+import { ConfirmationModal } from '../common/ConfirmationModal';
+import type { Item, ItemUpdatePayload } from '../../api/items';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<Item[]>([]);

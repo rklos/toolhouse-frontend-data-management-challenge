@@ -1,4 +1,4 @@
-import { useDebouncedCallback } from '../hooks/use-debounced-callback';
+import { useDebouncedCallback } from '../../hooks/use-debounced-callback';
 
 interface Props {
   onSearch: (search: string) => void;

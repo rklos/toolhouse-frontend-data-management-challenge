@@ -1,4 +1,4 @@
-import { PaginatedList } from './components/PaginatedList';
+import { PaginatedList } from './components/items-list/PaginatedList';
 
 function App() {
   return (

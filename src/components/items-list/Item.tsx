@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
-import { Button } from './Button';
-import { useClickOutside } from '../hooks/use-click-outside';
-import { getObjectChanges } from '../utils/get-object-changes';
+import { Button } from '../common/Button';
+import { useClickOutside } from '../../hooks/use-click-outside';
+import { getObjectChanges } from '../../utils/get-object-changes';
 import cn from 'classnames';
-import type { Item as ItemModel, ItemUpdatePayload } from '../api/items';
+import type { Item as ItemModel, ItemUpdatePayload } from '../../api/items';
 
 
 interface Props extends ItemModel {
