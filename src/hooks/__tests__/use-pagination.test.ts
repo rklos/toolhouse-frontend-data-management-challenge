@@ -270,7 +270,7 @@ describe('usePagination Hook - Pagination Calculations', () => {
   });
 
   it('should set loading state during fetch', async () => {
-    let resolvePromise: (value: any) => void;
+    let resolvePromise: (value: unknown) => void;
     const promise = new Promise((resolve) => {
       resolvePromise = resolve;
     });
