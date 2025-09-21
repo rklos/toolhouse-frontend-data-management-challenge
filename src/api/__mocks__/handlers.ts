@@ -26,4 +26,19 @@ export const handlers = [
     localItemsList = itemsList.filter((item) => item.id !== id);
     return HttpResponse.json({ success: true });
   }),
+  http.patch('/api/items/:id', ({ request, params }) => {
+    if (Math.random() < 0.1) {
+      return HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+
+    const id = params.id;
+    const item = localItemsList.find((item) => item.id === id);
+    if (!item) {
+      return HttpResponse.json({ error: 'Item not found' }, { status: 404 });
+    }
+
+    Object.assign(item, { ...request.body });
+
+    return HttpResponse.json({ success: true });
+  }),
 ];

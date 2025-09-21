@@ -3,13 +3,13 @@ import type { ItemModel } from './Item.tsx';
 
 interface Props {
   items: ItemModel[];
-  onSave: (item: ItemModel) => void;
+  onSave: (item: Partial<ItemModel> & { id: string }) => void;
   onDelete: (id: string) => void;
 }
 
 export function List({ items, onDelete, onSave }: Props) {
   // TODO: use useCallback
-  const handleSave = (item: ItemModel) => onSave(item);
+  const handleSave = (item: Partial<ItemModel> & { id: string }) => onSave(item);
   const handleDeleteFactory = (id: string) => () => onDelete(id);
 
   return (

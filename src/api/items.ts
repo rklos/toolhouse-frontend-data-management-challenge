@@ -21,3 +21,12 @@ export async function deleteItem(api: typeof ky, id: string): Promise<void> {
   // TODO: create dedicated error class
   if (!response.ok) throw new Error();
 }
+
+export async function saveItem(api: typeof ky, item: Partial<ItemModel> & { id: string }): Promise<void> {
+  const response = await api.patch('items/' + item.id, {
+    json: item,
+  });
+
+  // TODO: create dedicated error class
+  if (!response.ok) throw new Error();
+}

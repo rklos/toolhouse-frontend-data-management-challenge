@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from './Button';
 import { useClickOutside } from '../hooks/use-click-outside';
+import { getObjectChanges } from '../utils/get-object-changes';
 
 // TODO: move the interface to /api/items.ts
 export interface ItemModel {
@@ -12,25 +13,28 @@ export interface ItemModel {
 }
 
 interface Props extends ItemModel {
-  onSave: (item: ItemModel) => void;
+  // TODO: Move this type to /api/items.ts
+  onSave: (item: Partial<ItemModel> & { id: string }) => void;
   onDelete: () => void;
 }
 
 export function Item({ onSave, onDelete, ...item }: Props) {
   const [itemData, setItemData] = useState<ItemModel>(item);
   const [isEditing, setIsEditing] = useState(false);
-  const [dataChanged, setDataChanged] = useState<boolean>(false);
+  const dataBeforeSave = useRef<ItemModel>(item);
 
   const handleEdit = () => {
-    setDataChanged(false)
     setIsEditing(true);
   };
 
   const handleSave = () => {
     setIsEditing(false);
 
-    if (dataChanged) {
-      onSave(itemData);
+    const changes = getObjectChanges(itemData, dataBeforeSave.current);
+
+    if (Object.keys(changes).length > 0) {
+      onSave({ id: itemData.id, ...changes });
+      dataBeforeSave.current = { ...itemData };
     }
   };
 
@@ -38,9 +42,8 @@ export function Item({ onSave, onDelete, ...item }: Props) {
     onDelete();
   };
 
-  const changeHandlerFactory = (field: keyof ItemModel) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setItemData({ ...item, [field]: e.target.value ?? '' });
-    setDataChanged(true)
+  const changeHandlerFactory = (field: 'name' | 'description') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setItemData({ ...itemData, [field]: e.target.value ?? '' });
   };
 
   const editRef = useClickOutside<HTMLDivElement>(() => {

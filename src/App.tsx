@@ -10,18 +10,19 @@ function App() {
     api.items.getList()
       .then((res) => {
         setItems(res?.items ?? [])
-      })
+      });
   }, [])
 
   const handleDelete = (id: string) => {
     api.items.deleteItem(id)
       .then(() => {
         setItems(items.filter((item) => item.id !== id))
-      })
+      });
   }
 
-  const handleSave = () => {
-    // TODO: implement
+  const handleSave = (item: Partial<ItemModel> & { id: string }) => {
+    api.items.saveItem(item);
+    return true;
   }
 
   return (
