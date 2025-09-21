@@ -3,6 +3,7 @@ import {
   getList as itemsGetList,
   deleteItem as itemsDeleteItem,
   saveItem as itemsSaveItem,
+  addItem as itemsAddItem,
 } from './items';
 
 const api = ky.create({
@@ -15,8 +16,9 @@ const api = ky.create({
 export default {
   api,
   items: {
-    getList: async (params: Parameters<typeof itemsGetList>[1]) => itemsGetList(api, params),
-    deleteItem: async (id: string) => itemsDeleteItem(api, id),
-    saveItem: async (item: Parameters<typeof itemsSaveItem>[1]) => itemsSaveItem(api, item),
+    getList: (params: Parameters<typeof itemsGetList>[1]) => itemsGetList(api, params),
+    deleteItem: (id: string) => itemsDeleteItem(api, id),
+    saveItem: (item: Parameters<typeof itemsSaveItem>[1]) => itemsSaveItem(api, item),
+    addItem: (item: Parameters<typeof itemsAddItem>[1]) => itemsAddItem(api, item),
   }
 };

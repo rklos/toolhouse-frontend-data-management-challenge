@@ -50,4 +50,8 @@ export const handlers = [
 
     return HttpResponse.json({ success: true });
   }),
+  http.post('/api/items', async ({ request }) => {
+    localItemsList.push({ ...(await request.clone().json()) });
+    return HttpResponse.json({ success: true });
+  }),
 ];
