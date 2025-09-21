@@ -7,7 +7,7 @@ import {
 } from './items';
 
 const api = ky.create({
-  prefixUrl: 'http://localhost:5173/api',
+  prefixUrl: '/api',
   timeout: 30 * 1000,
   credentials: 'include',
   throwHttpErrors: false,
