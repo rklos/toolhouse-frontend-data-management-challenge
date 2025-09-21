@@ -52,8 +52,8 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   });
 
   return (
-    <div className="grid md:grid-cols-16 grid-cols-8 md:gap-4 gap-1 items-center [&_div]:px-2 auto-cols-max">
-      <div className={cn('md:col-span-10 col-span-4 flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:px-2', { '[&_input]:bg-gray-800': focused })} ref={editRef}>
+    <div className="grid [&_div]:px-2 grid-cols-subgrid col-span-4">
+      <div className={cn('flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:px-2', { '[&_input]:bg-gray-800': focused })} ref={editRef}>
         <input
             value={itemData.name}
             onFocus={handleEdit}
@@ -65,7 +65,7 @@ export function Item({ onSave, onDelete, ...item }: Props) {
             onChange={changeHandlerFactory('description')}
           />
       </div>
-      <div className="md:col-span-4 col-span-2">{itemData.createdAt}</div>
+      <div className="text-nowrap">{itemData.createdAt}</div>
       <div>{itemData.status}</div>
       <div className="justify-self-end">
         <Button onClick={handleDelete} disabled={isEditing}>X</Button>
