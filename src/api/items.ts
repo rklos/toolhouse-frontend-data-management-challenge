@@ -1,11 +1,20 @@
 import type ky from 'ky';
 import type { ItemModel } from '../components/Item';
 
-export async function getList(api: typeof ky, page?: number, pageSize?: number): Promise<{ items: ItemModel[], total: number }>  {
+export async function getList(api: typeof ky, params: {
+  page?: number;
+  pageSize?: number;
+  sort?: string;
+  query?: string;
+  status?: string;
+}): Promise<{ items: ItemModel[], total: number }>  {
   const response = await api.get('items', {
     searchParams: {
-      page,
-      pageSize,
+      page: params.page,
+      pageSize: params.pageSize,
+      sort: params.sort,
+      query: params.query,
+      status: params.status,
     },
   });
 

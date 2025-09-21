@@ -16,7 +16,13 @@ const api = ky.create({
 export default {
   api,
   items: {
-    getList: async (page?: number, pageSize?: number) => itemsGetList(api, page, pageSize),
+    getList: async (params: {
+      page?: number;
+      pageSize?: number;
+      sort?: string;
+      query?: string;
+      status?: string;
+    }) => itemsGetList(api, params),
     deleteItem: async (id: string) => itemsDeleteItem(api, id),
     saveItem: async (item: Partial<ItemModel> & { id: string }) => itemsSaveItem(api, item),
   }
