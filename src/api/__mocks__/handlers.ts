@@ -18,12 +18,13 @@ export const handlers = [
 
     const offset = (Number(page) - 1) * Number(pageSize);
     const items = localItemsList
-      .filter((item) => !query ||item.name.toLocaleLowerCase().includes(query) || item.description.toLocaleLowerCase().includes(query))
-      .filter((item) => !status ||item.status === status)
-      .sort(sortBy(sort))
-      .slice(offset, offset + Number(pageSize));
+      .filter((item) => !query || item.name.toLocaleLowerCase().includes(query) || item.description.toLocaleLowerCase().includes(query))
+      .filter((item) => !status || item.status === status)
+      .sort(sortBy(sort));
 
-    return HttpResponse.json({ items, total: items.length });
+    const slicedItems = items.slice(offset, offset + Number(pageSize));
+
+    return HttpResponse.json({ items: slicedItems, total: items.length });
   }),
   http.delete('/api/items/:id', ({ params }) => {
     if (Math.random() < 0.1) {
