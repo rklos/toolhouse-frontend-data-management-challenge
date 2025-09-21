@@ -37,7 +37,7 @@ export function usePagination<T extends object>(
   };
 
   const updateParams = (newParams: FilterParams) => {
-    setParams(newParams);
+    setParams((old) => ({ ...old, ...newParams }));
     setPage(1);
     fetchItems({ page: 1, params: newParams });
   };
