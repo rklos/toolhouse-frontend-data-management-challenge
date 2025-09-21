@@ -13,7 +13,11 @@ export function useClickOutside<T extends HTMLElement>(
     function listener(event: MouseEvent | TouchEvent) {
       if (!ref.current) return;
       if (ref.current.contains(event.target as Node)) {
-        setFocused(true);
+        // Only set focused to true if clicking on input elements or other focusable elements
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable) {
+          setFocused(true);
+        }
         return;
       }
 
