@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Item } from './Item';
 import type { ItemModel } from './Item.tsx';
 
@@ -9,8 +10,8 @@ interface Props {
 
 export function List({ items, onDelete, onSave }: Props) {
   // TODO: use useCallback
-  const handleSave = (item: Partial<ItemModel> & { id: string }) => onSave(item);
-  const handleDeleteFactory = (id: string) => () => onDelete(id);
+  const handleSave = useCallback((item: Partial<ItemModel> & { id: string }) => onSave(item), [onSave]);
+  const handleDeleteFactory = useCallback((id: string) => () => onDelete(id), [onDelete]);
 
   return (
     <div className="grid max-w-7xl">

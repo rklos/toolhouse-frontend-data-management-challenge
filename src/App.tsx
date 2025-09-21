@@ -1,5 +1,5 @@
+import { useEffect, useState, useCallback } from 'react'
 import { List } from './components/List'
-import { useEffect, useState } from 'react'
 import api from './api'
 import type { ItemModel } from './components/Item'
 
@@ -13,17 +13,17 @@ function App() {
       });
   }, [])
 
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     api.items.deleteItem(id)
       .then(() => {
         setItems(items.filter((item) => item.id !== id))
       });
-  }
+  }, [items])
 
-  const handleSave = (item: Partial<ItemModel> & { id: string }) => {
+  const handleSave = useCallback((item: Partial<ItemModel> & { id: string }) => {
     api.items.saveItem(item);
     return true;
-  }
+  }, [])
 
   return (
     <main>
