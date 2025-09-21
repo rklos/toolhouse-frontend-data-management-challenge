@@ -1,5 +1,6 @@
 import { http, delay, HttpResponse } from 'msw';
 import itemsList from './items-list';
+import { sortBy } from './sort';
 
 let localItemsList = [ ...itemsList ];
 
@@ -11,9 +12,16 @@ export const handlers = [
     const url = new URL(request.url);
     const page = url.searchParams.get('page') ?? '1';
     const pageSize = url.searchParams.get('pageSize') ?? '10';
+    const sort = url.searchParams.get('sort') ?? 'name:asc';
+    const query = url.searchParams.get('query') ?? '';
+    const status = url.searchParams.get('status') ?? '';
 
     const offset = (Number(page) - 1) * Number(pageSize);
-    const items = localItemsList.slice(offset, offset + Number(pageSize));
+    const items = localItemsList
+      .filter((item) => item.name.includes(query) || item.description.includes(query))
+      .filter((item) => item.status === status)
+      .slice(offset, offset + Number(pageSize))
+      .sort(sortBy(sort));
 
     return HttpResponse.json({ items, total: localItemsList.length });
   }),
