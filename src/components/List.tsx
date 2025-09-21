@@ -9,7 +9,6 @@ interface Props {
 }
 
 export function List({ items, onDelete, onSave }: Props) {
-  // TODO: use useCallback
   const handleSave = useCallback((item: Partial<ItemModel> & { id: string }) => onSave(item), [onSave]);
   const handleDeleteFactory = useCallback((id: string) => () => onDelete(id), [onDelete]);
 
