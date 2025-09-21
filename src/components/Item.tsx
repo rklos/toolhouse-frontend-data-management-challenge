@@ -40,17 +40,27 @@ export function Item({ onSave, onDelete, ...item }: Props) {
     setItemData({ ...itemData, [field]: e.target.value ?? '' });
   };
 
-  const { ref: editRef, focused } = useClickOutside<HTMLDivElement>(handleSave);
+  const { ref: editRef, focused, blur } = useClickOutside<HTMLDivElement>(handleSave);
+
+  const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSave();
+      e.currentTarget.blur();
+      blur();
+    }
+  };
 
   return (
     <div className={cn("grid [&_*]:px-2 py-1 grid-cols-subgrid col-span-5 border-t border-gray-800 gap-2", { '[&_input]:bg-gray-800': focused })} ref={editRef}>
       <input
           value={itemData.name}
           onChange={changeHandlerFactory('name')}
+          onKeyUp={onEnter}
         />
       <input
           value={itemData.description}
           onChange={changeHandlerFactory('description')}
+          onKeyUp={onEnter}
         />
       <div className="text-nowrap">{itemData.createdAt}</div>
       <div>{itemData.status}</div>

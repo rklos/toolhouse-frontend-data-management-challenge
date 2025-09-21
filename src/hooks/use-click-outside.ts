@@ -5,7 +5,7 @@ type Handler = (event: MouseEvent | TouchEvent) => void;
 
 export function useClickOutside<T extends HTMLElement>(
   handler: Handler
-): { ref: RefObject<T | null>, focused: boolean } {
+): { ref: RefObject<T | null>, focused: boolean, blur: () => void } {
   const ref = useRef<T | null>(null);
   const [focused, setFocused] = useState(false);
 
@@ -30,5 +30,9 @@ export function useClickOutside<T extends HTMLElement>(
     };
   }, [handler]);
 
-  return { ref, focused };
+  const blur = () => {
+    setFocused(false);
+  };  
+
+  return { ref, focused, blur };
 }
