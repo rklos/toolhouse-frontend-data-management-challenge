@@ -23,7 +23,7 @@ export const handlers = [
     }
 
     const id = params.id;
-    localItemsList = itemsList.filter((item) => item.id !== id);
+    localItemsList = localItemsList.filter((item) => item.id !== id);
     return HttpResponse.json({ success: true });
   }),
   http.patch('/api/items/:id', ({ request, params }) => {
