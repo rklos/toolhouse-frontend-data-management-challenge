@@ -10,13 +10,15 @@ export interface Item {
 
 export type ItemUpdatePayload = Partial<Item> & { id: string };
 
-export async function getList(api: typeof ky, params: {
+export interface ApiParams {
   page?: number;
   pageSize?: number;
   sort?: string;
   query?: string;
   status?: string;
-}): Promise<{ items: Item[], total: number }>  {
+}
+
+export async function getList(api: typeof ky, params: ApiParams): Promise<{ items: Item[], total: number }>  {
   const response = await api.get('items', {
     searchParams: {
       page: params.page,
