@@ -2,32 +2,38 @@ import { useState, useCallback, useMemo } from 'react';
 import { Item } from './Item';
 import type { ItemModel } from './Item.tsx';
 
+type SortBy = `${keyof ItemModel}:${'asc' | 'desc'}`;
+
 interface Props {
   items: ItemModel[];
   onSave: (item: Partial<ItemModel> & { id: string }) => void;
   onDelete: (id: string) => void;
-  onSort: (field: keyof ItemModel) => void;
+  onSort: (sort: SortBy) => void;
 }
 
 export function List({ items, onDelete, onSave, onSort }: Props) {
-  const [sortBy, setSortBy] = useState<`${keyof ItemModel}${'Asc' | 'Desc'}`>('nameAsc');
+  const [sortBy, setSortBy] = useState<SortBy>('name:asc');
 
   const handleSave = useCallback((item: Partial<ItemModel> & { id: string }) => onSave(item), [onSave]);
   const handleDelete = useCallback((id: string) => onDelete(id), [onDelete]);
 
   const handleSortBy = (field: keyof ItemModel) => {
+    let newSortBy = sortBy;
+
     if (sortBy.includes(field)) {
-      setSortBy(sortBy.includes('Asc') ? `${field}Desc` : `${field}Asc`);
+      newSortBy = sortBy.includes('asc') ? `${field}:desc` : `${field}:asc`
+      setSortBy(newSortBy);
     } else {
-      setSortBy(`${field}Asc`);
+      newSortBy = `${field}:asc`;
+      setSortBy(newSortBy);
     }
     
-    onSort(field);
+    onSort(newSortBy);
   };
 
   const getSortByIndicator = (field: keyof ItemModel) => {
     if (sortBy.includes(field)) {
-      return sortBy.includes('Asc') ? '▲' : '▼';
+      return sortBy.includes('asc') ? '▲' : '▼';
     }
 
     return '';

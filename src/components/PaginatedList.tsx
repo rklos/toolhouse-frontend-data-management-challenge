@@ -7,9 +7,17 @@ import { Button } from './Button';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<ItemModel[]>([]);
+  const [apiParams, setApiParams] = useState<{
+    page?: number;
+    pageSize?: number;
+    sort?: string;
+    query?: string;
+    status?: string;
+  }>({});
   const { maxPages, page, isLoading, setPage, fetchItems, nextPage, previousPage } = usePagination({
     apiGetter: api.items.getList,
     onItemsChange: setLocalItems,
+    apiParams,
   });
 
   useEffect(() => {
@@ -26,13 +34,19 @@ export function PaginatedList() {
     return true;
   }, []);
 
+  const handleSort = useCallback((sort: string) => {
+    const newApiParams = { ...apiParams, sort };
+    setApiParams(newApiParams);
+    fetchItems(page, newApiParams);
+  }, [fetchItems, page, apiParams]);
+
   const pages = Array.from({ length: maxPages }).map((_, index) => index + 1);
 
   return (
     <>
       <div className="relative">
         { isLoading && <div className="absolute inset-0 flex justify-center items-center backdrop-blur-xs" /> }
-        <List items={localItems} onDelete={handleDelete} onSave={handleSave} />
+        <List items={localItems} onDelete={handleDelete} onSave={handleSave} onSort={handleSort} />
       </div>
       <section className="flex justify-center p-4 gap-2">
         <Button onClick={previousPage} disabled={page === 1}>Previous</Button>

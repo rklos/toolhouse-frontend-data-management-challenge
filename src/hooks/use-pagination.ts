@@ -3,11 +3,22 @@ import { useState, useTransition, useReducer } from 'react';
 const PAGE_SIZE = 20;
 
 interface Props<T extends object> {
-  apiGetter: (page: number, pageSize: number) => Promise<{ items: T[], total: number }>;
+  apiParams?: {
+    sort?: string;
+    query?: string;
+    status?: string;
+  };
+  apiGetter: (params: {
+    page?: number;
+    pageSize?: number;
+    sort?: string;
+    query?: string;
+    status?: string;
+  }) => Promise<{ items: T[], total: number }>;
   onItemsChange: (items: T[]) => void;
 }
 
-export function usePagination<T extends object>({ apiGetter, onItemsChange }: Props<T>) {
+export function usePagination<T extends object>({ apiGetter, onItemsChange, apiParams }: Props<T>) {
   const [items, setItems] = useState<T[]>([]);
   const [maxPages, setMaxPages] = useState(1);
   const [isLoading, startTransition] = useTransition();
@@ -23,9 +34,15 @@ export function usePagination<T extends object>({ apiGetter, onItemsChange }: Pr
     return newState;
   }, 1);
 
-  const fetchItems = (p?: number) => {
+  const fetchItems = (p?: number, params?: Props<T>['apiParams']) => {
     startTransition(async () => {
-      const res = await apiGetter(p ?? page, PAGE_SIZE);
+      const res = await apiGetter({
+        page: p ?? page,
+        pageSize: PAGE_SIZE,
+        sort: params?.sort ?? apiParams?.sort,
+        query: params?.query ?? apiParams?.query,
+        status: params?.status ?? apiParams?.status,
+      });
 
       // HACK: https://react.dev/reference/react/useTransition#react-doesnt-treat-my-state-update-after-await-as-a-transition
       startTransition(() => {
