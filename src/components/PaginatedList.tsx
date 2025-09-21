@@ -26,6 +26,8 @@ export function PaginatedList() {
     return true;
   }, []);
 
+  const pages = Array.from({ length: maxPages }).map((_, index) => index + 1);
+
   return (
     <>
       <div className="relative">
@@ -34,8 +36,8 @@ export function PaginatedList() {
       </div>
       <section className="flex justify-center p-4 gap-2">
         <Button onClick={previousPage} disabled={page === 1}>Previous</Button>
-        {Array.from({ length: maxPages }).map((_, index) => (
-          <Button key={index} onClick={() => setPage(index + 1)} active={page === index + 1}>{index + 1}</Button>
+        {pages.map((pageNumber) => (
+          <Button key={pageNumber} onClick={() => setPage(pageNumber)} active={page === pageNumber}>{pageNumber}</Button>
         ))}
         <Button onClick={nextPage} disabled={page === maxPages}>Next</Button>
       </section>
