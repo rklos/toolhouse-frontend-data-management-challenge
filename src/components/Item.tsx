@@ -16,7 +16,7 @@ export interface ItemModel {
 interface Props extends ItemModel {
   // TODO: Move this type to /api/items.ts
   onSave: (item: Partial<ItemModel> & { id: string }) => void;
-  onDelete: () => void;
+  onDelete: (id: string) => void;
 }
 
 export function Item({ onSave, onDelete, ...item }: Props) {
@@ -33,8 +33,8 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   };
 
   const handleDelete = useCallback(() => {
-    onDelete();
-  }, [onDelete]);
+    onDelete(itemData.id);
+  }, [onDelete, itemData.id]);
 
   const changeHandlerFactory = (field: 'name' | 'description') => (e: React.ChangeEvent<HTMLInputElement>) => {
     setItemData({ ...itemData, [field]: e.target.value ?? '' });
