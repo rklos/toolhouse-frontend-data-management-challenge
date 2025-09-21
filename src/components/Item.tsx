@@ -15,7 +15,7 @@ export interface ItemModel {
 
 interface Props extends ItemModel {
   // TODO: Move this type to /api/items.ts
-  onSave: (item: Partial<ItemModel> & { id: string }) => void;
+  onSave: (item: Partial<ItemModel> & { id: string }) => Promise<boolean>;
   onDelete: (id: string) => void;
 }
 
@@ -23,12 +23,17 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   const [itemData, setItemData] = useState<ItemModel>(item);
   const dataBeforeSave = useRef<ItemModel>(item);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const changes = getObjectChanges(itemData, dataBeforeSave.current);
 
     if (Object.keys(changes).length > 0) {
-      onSave({ id: itemData.id, ...changes });
-      dataBeforeSave.current = { ...itemData };
+      const success = await onSave({ id: itemData.id, ...changes });
+      if (success) {
+        dataBeforeSave.current = { ...itemData };
+      } else {
+        // Revert changes on failure
+        setItemData(dataBeforeSave.current);
+      }
     }
   };
 
@@ -40,7 +45,9 @@ export function Item({ onSave, onDelete, ...item }: Props) {
     setItemData({ ...itemData, [field]: e.target.value ?? '' });
   };
 
-  const { ref: editRef, focused, blur } = useClickOutside<HTMLDivElement>(handleSave);
+  const { ref: editRef, focused, blur } = useClickOutside<HTMLDivElement>(() => {
+    handleSave();
+  });
 
   const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

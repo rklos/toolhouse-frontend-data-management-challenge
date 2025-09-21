@@ -5,6 +5,7 @@ import { usePagination } from '../hooks/use-pagination';
 import api from '../api';
 import { Button } from './Button';
 import { Filters } from './Filters';
+import { Toast } from './Toast';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<ItemModel[]>([]);
@@ -15,6 +16,7 @@ export function PaginatedList() {
     query?: string;
     status?: string;
   }>({});
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const { maxPages, page, isLoading, setPage, fetchItems, nextPage, previousPage } = usePagination({
     apiGetter: api.items.getList,
     onItemsChange: setLocalItems,
@@ -26,13 +28,22 @@ export function PaginatedList() {
   }, []);
 
   const handleDelete = useCallback(async (id: string) => {
-    await api.items.deleteItem(id)
-    setLocalItems(localItems.filter((item) => item.id !== id));
+    try {
+      await api.items.deleteItem(id);
+      setLocalItems(localItems.filter((item) => item.id !== id));
+    } catch {
+      setToastMessage('Failed to delete item. Please try again.');
+    }
   }, [localItems]);
 
-  const handleSave = useCallback((item: Partial<ItemModel> & { id: string }) => {
-    api.items.saveItem(item);
-    return true;
+  const handleSave = useCallback(async (item: Partial<ItemModel> & { id: string }) => {
+    try {
+      await api.items.saveItem(item);
+      return true;
+    } catch {
+      setToastMessage('Failed to save item. Please try again.');
+      return false;
+    }
   }, []);
 
   const handleSort = useCallback((sort: string) => {
@@ -55,6 +66,10 @@ export function PaginatedList() {
 
   const pages = Array.from({ length: maxPages }).map((_, index) => index + 1);
 
+  const clearToast = () => {
+    setToastMessage(null);
+  };
+
   return (
     <>
       <div className="relative">
@@ -69,6 +84,12 @@ export function PaginatedList() {
         ))}
         <Button onClick={nextPage} disabled={page === maxPages}>Next</Button>
       </section>
+      {toastMessage && (
+        <Toast
+          text={toastMessage}
+          onClose={clearToast}
+        />
+      )}
     </>
   );
 }
