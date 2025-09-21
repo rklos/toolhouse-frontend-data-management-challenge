@@ -26,7 +26,7 @@ export const handlers = [
     localItemsList = localItemsList.filter((item) => item.id !== id);
     return HttpResponse.json({ success: true });
   }),
-  http.patch('/api/items/:id', ({ request, params }) => {
+  http.patch('/api/items/:id', async ({ request, params }) => {
     if (Math.random() < 0.1) {
       return HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
@@ -37,7 +37,7 @@ export const handlers = [
       return HttpResponse.json({ error: 'Item not found' }, { status: 404 });
     }
 
-    Object.assign(item, { ...request.body });
+    Object.assign(item, { ...(await request.clone().json()) });
 
     return HttpResponse.json({ success: true });
   }),
