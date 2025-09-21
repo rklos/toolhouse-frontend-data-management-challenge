@@ -40,7 +40,7 @@ export async function deleteItem(api: typeof ky, id: string): Promise<void> {
   if (!response.ok) throw new Error();
 }
 
-export async function saveItem(api: typeof ky, item: Partial<Item> & { id: string }): Promise<void> {
+export async function saveItem(api: typeof ky, item: ItemUpdatePayload): Promise<void> {
   const response = await api.patch('items/' + item.id, {
     json: item,
   });
