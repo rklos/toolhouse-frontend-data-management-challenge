@@ -1,6 +1,7 @@
 import { http, delay, HttpResponse } from 'msw';
 import itemsList from './items-list';
 import { sortBy } from './sort';
+import { v4 as uuidv4 } from 'uuid';
 
 let localItemsList = [ ...itemsList ];
 
@@ -51,7 +52,11 @@ export const handlers = [
     return HttpResponse.json({ success: true });
   }),
   http.post('/api/items', async ({ request }) => {
-    localItemsList.push({ ...(await request.clone().json()) });
+    localItemsList.push({
+      ...(await request.clone().json()),
+      id: uuidv4(),
+      createdAt: new Date().toISOString(),
+    });
     return HttpResponse.json({ success: true });
   }),
 ];
