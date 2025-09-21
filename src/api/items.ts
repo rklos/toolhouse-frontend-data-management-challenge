@@ -27,7 +27,6 @@ export async function getList(api: typeof ky, params: {
     },
   });
 
-  // TODO: create dedicated error class
   if (!response.ok) throw new Error();
 
   return response.json();
@@ -36,7 +35,6 @@ export async function getList(api: typeof ky, params: {
 export async function deleteItem(api: typeof ky, id: string): Promise<void> {
   const response = await api.delete('items/' + id);
 
-  // TODO: create dedicated error class
   if (!response.ok) throw new Error();
 }
 
@@ -45,6 +43,5 @@ export async function saveItem(api: typeof ky, item: ItemUpdatePayload): Promise
     json: item,
   });
 
-  // TODO: create dedicated error class
   if (!response.ok) throw new Error();
 }
