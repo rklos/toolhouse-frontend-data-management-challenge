@@ -18,8 +18,8 @@ export const handlers = [
 
     const offset = (Number(page) - 1) * Number(pageSize);
     const items = localItemsList
-      .filter((item) => item.name.includes(query) || item.description.includes(query))
-      .filter((item) => item.status === status)
+      .filter((item) => !query ||item.name.includes(query) || item.description.includes(query))
+      .filter((item) => !status ||item.status === status)
       .slice(offset, offset + Number(pageSize))
       .sort(sortBy(sort));
 
