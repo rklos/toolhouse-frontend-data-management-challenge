@@ -13,12 +13,12 @@ export const handlers = [
     const page = url.searchParams.get('page') ?? '1';
     const pageSize = url.searchParams.get('pageSize') ?? '10';
     const sort = url.searchParams.get('sort') ?? 'name:asc';
-    const query = url.searchParams.get('query') ?? '';
+    const query = url.searchParams.get('query')?.toLowerCase() ?? '';
     const status = url.searchParams.get('status') ?? '';
 
     const offset = (Number(page) - 1) * Number(pageSize);
     const items = localItemsList
-      .filter((item) => !query ||item.name.includes(query) || item.description.includes(query))
+      .filter((item) => !query ||item.name.toLocaleLowerCase().includes(query) || item.description.toLocaleLowerCase().includes(query))
       .filter((item) => !status ||item.status === status)
       .sort(sortBy(sort))
       .slice(offset, offset + Number(pageSize));

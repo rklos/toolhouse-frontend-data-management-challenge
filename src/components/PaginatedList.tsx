@@ -4,6 +4,7 @@ import type { ItemModel } from './Item';
 import { usePagination } from '../hooks/use-pagination';
 import api from '../api';
 import { Button } from './Button';
+import { Filters } from './Filters';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<ItemModel[]>([]);
@@ -40,12 +41,25 @@ export function PaginatedList() {
     fetchItems(page, newApiParams);
   }, [fetchItems, page, apiParams]);
 
+  const handleSearch = useCallback((search: string) => {
+    const newApiParams = { ...apiParams, query: search };
+    setApiParams(newApiParams);
+    fetchItems(page, newApiParams);
+  }, [fetchItems, page, apiParams]);
+
+  const handleStatusChange = useCallback((status: string) => {
+    const newApiParams = { ...apiParams, status };
+    setApiParams(newApiParams);
+    fetchItems(page, newApiParams);
+  }, [fetchItems, page, apiParams]);
+
   const pages = Array.from({ length: maxPages }).map((_, index) => index + 1);
 
   return (
     <>
       <div className="relative">
         { isLoading && <div className="absolute inset-0 flex justify-center items-center backdrop-blur-xs" /> }
+        <Filters onSearch={handleSearch} onStatusChange={handleStatusChange} />
         <List items={localItems} onDelete={handleDelete} onSave={handleSave} onSort={handleSort} />
       </div>
       <section className="flex justify-center p-4 gap-2">
