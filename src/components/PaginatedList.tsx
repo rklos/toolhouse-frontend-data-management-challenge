@@ -5,11 +5,10 @@ import api from '../api';
 import { Button } from './Button';
 import { Filters } from './Filters';
 import { Toast } from './Toast';
-import type { Item, ItemUpdatePayload, ApiParams } from '../api/items';
+import type { Item, ItemUpdatePayload } from '../api/items';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<Item[]>([]);
-  const [apiParams, setApiParams] = useState<ApiParams>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const {
@@ -19,7 +18,9 @@ export function PaginatedList() {
     isLoading,
     goToPage,
     fetchItems,
-  } = usePagination(api.items.getList, apiParams);
+    params,
+    setParams,
+  } = usePagination(api.items.getList);
 
   useEffect(() => {
     fetchItems();
@@ -56,12 +57,12 @@ export function PaginatedList() {
   );
 
   const updateApiParamsAndFetch = useCallback(
-    (newParams: Partial<typeof apiParams>) => {
-      const updatedParams = { ...apiParams, ...newParams };
-      setApiParams(updatedParams);
+    (newParams: Partial<typeof params>) => {
+      const updatedParams = { ...params, ...newParams };
+      setParams(updatedParams);
       fetchItems({ page, params: updatedParams });
     },
-    [apiParams, fetchItems, page]
+    [params, fetchItems, page, setParams]
   );
 
   const handleSort = useCallback(
