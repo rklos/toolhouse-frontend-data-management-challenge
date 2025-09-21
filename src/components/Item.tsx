@@ -3,19 +3,11 @@ import { Button } from './Button';
 import { useClickOutside } from '../hooks/use-click-outside';
 import { getObjectChanges } from '../utils/get-object-changes';
 import cn from 'classnames';
+import type { Item as ItemModel, ItemUpdatePayload } from '../api/items';
 
-// TODO: move the interface to /api/items.ts
-export interface ItemModel {
-  id: string; // uuid
-  name: string;
-  description: string;
-  createdAt: string; // ISO date string
-  status: 'active' | 'archived' | 'draft';
-}
 
 interface Props extends ItemModel {
-  // TODO: Move this type to /api/items.ts
-  onSave: (item: Partial<ItemModel> & { id: string }) => Promise<boolean>;
+  onSave: (item: ItemUpdatePayload) => Promise<boolean>;
   onDelete: (id: string) => void;
 }
 

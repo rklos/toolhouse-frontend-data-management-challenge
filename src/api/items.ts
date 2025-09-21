@@ -1,5 +1,14 @@
 import type ky from 'ky';
-import type { ItemModel } from '../components/Item';
+
+export interface Item {
+  id: string; // uuid
+  name: string;
+  description: string;
+  createdAt: string; // ISO date string
+  status: 'active' | 'archived' | 'draft';
+}
+
+export type ItemUpdatePayload = Partial<Item> & { id: string };
 
 export async function getList(api: typeof ky, params: {
   page?: number;
@@ -7,7 +16,7 @@ export async function getList(api: typeof ky, params: {
   sort?: string;
   query?: string;
   status?: string;
-}): Promise<{ items: ItemModel[], total: number }>  {
+}): Promise<{ items: Item[], total: number }>  {
   const response = await api.get('items', {
     searchParams: {
       page: params.page,
@@ -31,7 +40,7 @@ export async function deleteItem(api: typeof ky, id: string): Promise<void> {
   if (!response.ok) throw new Error();
 }
 
-export async function saveItem(api: typeof ky, item: Partial<ItemModel> & { id: string }): Promise<void> {
+export async function saveItem(api: typeof ky, item: Partial<Item> & { id: string }): Promise<void> {
   const response = await api.patch('items/' + item.id, {
     json: item,
   });

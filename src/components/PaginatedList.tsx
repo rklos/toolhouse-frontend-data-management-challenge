@@ -1,14 +1,14 @@
 import { useEffect, useCallback, useState } from 'react';
 import { List } from './List';
-import type { ItemModel } from './Item';
 import { usePagination } from '../hooks/use-pagination';
 import api from '../api';
 import { Button } from './Button';
 import { Filters } from './Filters';
 import { Toast } from './Toast';
+import type { Item, ItemUpdatePayload } from '../api/items';
 
 export function PaginatedList() {
-  const [localItems, setLocalItems] = useState<ItemModel[]>([]);
+  const [localItems, setLocalItems] = useState<Item[]>([]);
   const [apiParams, setApiParams] = useState<{
     page?: number;
     pageSize?: number;
@@ -36,7 +36,7 @@ export function PaginatedList() {
     }
   }, [localItems]);
 
-  const handleSave = useCallback(async (item: Partial<ItemModel> & { id: string }) => {
+  const handleSave = useCallback(async (item: ItemUpdatePayload) => {
     try {
       await api.items.saveItem(item);
       return true;

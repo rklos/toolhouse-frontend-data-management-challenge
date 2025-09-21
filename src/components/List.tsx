@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Item } from './Item';
-import type { ItemModel } from './Item.tsx';
+import type { Item as ItemModel, ItemUpdatePayload } from '../api/items';
 
 type SortBy = `${keyof ItemModel}:${'asc' | 'desc'}`;
 
 interface Props {
   items: ItemModel[];
-  onSave: (item: Partial<ItemModel> & { id: string }) => void;
+  onSave: (item: ItemUpdatePayload) => Promise<boolean>;
   onDelete: (id: string) => void;
   onSort: (sort: SortBy) => void;
 }
@@ -14,7 +14,7 @@ interface Props {
 export function List({ items, onDelete, onSave, onSort }: Props) {
   const [sortBy, setSortBy] = useState<SortBy>('name:asc');
 
-  const handleSave = useCallback((item: Partial<ItemModel> & { id: string }) => onSave(item), [onSave]);
+  const handleSave = useCallback((item: ItemUpdatePayload) => onSave(item), [onSave]);
   const handleDelete = useCallback((id: string) => onDelete(id), [onDelete]);
 
   const handleSortBy = (field: keyof ItemModel) => {
