@@ -5,6 +5,10 @@
   @apply text-base text-white bg-gray-900;
 }
 
+#root {
+  @apply px-8 py-12;
+}
+
 body {
-  @apply flex flex-col items-center justify-center min-h-screen;
+  @apply flex items-center justify-center min-h-screen;
 }

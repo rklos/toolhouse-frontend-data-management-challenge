@@ -1,4 +1,3 @@
-import './App.css'
 import { List } from './components/List'
 import { useEffect, useState } from 'react'
 import api from './api'
