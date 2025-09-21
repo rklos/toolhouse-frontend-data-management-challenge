@@ -5,9 +5,10 @@ interface Props {
   active?: boolean;
   children: React.ReactNode;
   onClick: () => void;
+  className?: string;
 }
 
-export function Button({ disabled, active, children, onClick }: Props) {
+export function Button({ disabled, active, children, onClick, className }: Props) {
   const classNames = cn(
     'border border-gray-300 text-xs px-2 py-1 rounded-md',
     {
@@ -17,6 +18,7 @@ export function Button({ disabled, active, children, onClick }: Props) {
       'bg-gray-300': active,
       'text-gray-900': active,
     },
+    className
   );
 
   return (

@@ -5,11 +5,21 @@ import api from '../api';
 import { Button } from './Button';
 import { Filters } from './Filters';
 import { Toast } from './Toast';
+import { ConfirmationModal } from './ConfirmationModal';
 import type { Item, ItemUpdatePayload } from '../api/items';
 
 export function PaginatedList() {
   const [localItems, setLocalItems] = useState<Item[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    itemId: string | null;
+    itemName: string;
+  }>({
+    isOpen: false,
+    itemId: null,
+    itemName: '',
+  });
 
   const {
     items,
@@ -31,17 +41,39 @@ export function PaginatedList() {
     setLocalItems(items);
   }, [items])
 
-  const handleDelete = useCallback(
-    async (id: string) => {
-      try {
-        await api.items.deleteItem(id);
-        setLocalItems((items) => items.filter((item) => item.id !== id));
-      } catch {
-        setToastMessage('Failed to delete item. Please try again.');
+  const handleDeleteRequest = useCallback(
+    (id: string) => {
+      const item = localItems.find(item => item.id === id);
+      if (item) {
+        setDeleteModal({
+          isOpen: true,
+          itemId: id,
+          itemName: item.name,
+        });
       }
     },
-    []
+    [localItems]
   );
+
+  const handleDeleteConfirm = useCallback(
+    async () => {
+      if (!deleteModal.itemId) return;
+      
+      try {
+        await api.items.deleteItem(deleteModal.itemId);
+        setLocalItems((items) => items.filter((item) => item.id !== deleteModal.itemId));
+        setDeleteModal({ isOpen: false, itemId: null, itemName: '' });
+      } catch {
+        setToastMessage('Failed to delete item. Please try again.');
+        setDeleteModal({ isOpen: false, itemId: null, itemName: '' });
+      }
+    },
+    [deleteModal.itemId]
+  );
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteModal({ isOpen: false, itemId: null, itemName: '' });
+  }, []);
 
   const handleSave = useCallback(
     async (item: ItemUpdatePayload) => {
@@ -89,7 +121,7 @@ export function PaginatedList() {
       <div className="relative">
         { isLoading && <div className="absolute inset-0 flex justify-center items-center backdrop-blur-xs" /> }
         <Filters onSearch={handleSearch} onStatusChange={handleStatusChange} />
-        <List items={localItems} onDelete={handleDelete} onSave={handleSave} onSort={handleSort} />
+        <List items={localItems} onDelete={handleDeleteRequest} onSave={handleSave} onSort={handleSort} />
       </div>
       <section className="flex justify-center p-4 gap-2">
         <Button onClick={() => goToPage(page - 1)} disabled={page === 1}>Previous</Button>
@@ -104,6 +136,15 @@ export function PaginatedList() {
           onClose={clearToast}
         />
       )}
+      <ConfirmationModal
+        isOpen={deleteModal.isOpen}
+        title="Delete Item"
+        message={`Are you sure you want to delete "${deleteModal.itemName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </>
   );
 }
