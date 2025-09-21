@@ -13,7 +13,7 @@ export function List({ items, onDelete, onSave }: Props) {
   const handleDeleteFactory = useCallback((id: string) => () => onDelete(id), [onDelete]);
 
   return (
-    <div className="grid md:gap-4 gap-1 max-w-7xl">
+    <div className="grid max-w-7xl">
       {items.map((itemData) => (
         <Item 
           key={itemData.id}

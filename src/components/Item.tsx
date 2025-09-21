@@ -52,7 +52,7 @@ export function Item({ onSave, onDelete, ...item }: Props) {
   });
 
   return (
-    <div className="grid [&_div]:px-2 grid-cols-subgrid col-span-4">
+    <div className="grid [&_div]:px-2 py-1 grid-cols-subgrid col-span-4 border-t border-gray-800">
       <div className={cn('flex md:gap-4 gap-1 [&_input]:flex-1 [&_input]:shrink [&_input]:min-w-0 [&_input]:px-2', { '[&_input]:bg-gray-800': focused })} ref={editRef}>
         <input
             value={itemData.name}
